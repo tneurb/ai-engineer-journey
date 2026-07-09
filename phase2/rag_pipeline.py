@@ -5,6 +5,7 @@ import voyageai
 from dotenv import load_dotenv
 import time
 import anthropic
+import time
 
 
 load_dotenv()
@@ -105,7 +106,7 @@ Question: {question}"""
 # answer_question("What is Spring Boot and why was it created?")
 # answer_question("How do I configure Spring Security roles?")
 
-import time
+
 
 time.sleep(5)  # small buffer to respect rate limits
 answer_question("What is Spring Boot and why was it created?")

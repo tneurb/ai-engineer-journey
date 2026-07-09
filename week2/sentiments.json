@@ -1,0 +1,5 @@
+{
+    "sentiment": "positive" or "negative" or "neutral",
+    "confidence": "high" or "medium" or "low",
+    "reason": "one sentence explaining why"
+}

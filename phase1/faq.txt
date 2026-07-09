@@ -1,0 +1,17 @@
+COMPANY: TechCorp Thailand
+PRODUCT: CloudStorage Pro
+
+Q: How much does CloudStorage Pro cost?
+A: CloudStorage Pro costs 299 THB per month for 100GB or 599 THB per month for 1TB.
+
+Q: How do I cancel my subscription?
+A: You can cancel anytime from your account settings under Billing > Cancel Subscription.
+
+Q: Is my data backed up?
+A: Yes, all data is automatically backed up every 24 hours to 3 separate locations.
+
+Q: What payment methods do you accept?
+A: We accept credit cards, PromptPay, and bank transfer.
+
+Q: How do I contact support?
+A: Email support@techcorp.th or call 02-xxx-xxxx Monday to Friday 9am-6pm.

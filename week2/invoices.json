@@ -1,0 +1,7 @@
+{
+    "vendor": "company or person name",
+    "amount": 1234.56,
+    "currency": "USD" or "THB" or "EUR" etc,
+    "date": "YYYY-MM-DD format",
+    "status": "paid" or "unpaid" or "unknown"
+}

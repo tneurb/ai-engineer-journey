@@ -47,3 +47,24 @@ PDF → chunking → Voyage embeddings → ChromaDB → FastAPI → Gradio chat 
 uvicorn phase2.rag_api:app --reload    # terminal 1
 python phase2/gradio_app.py             # terminal 2
 ```
+
+### Multi-Step Tool-Using Agent
+
+A ReAct-pattern agent that reasons about which tools it needs, calls them,
+and synthesizes results into a final answer — rather than guessing at
+computations an LLM is known to get wrong.
+
+**Tools:** calculator (real Python `eval()`), word counter
+
+**Key engineering decisions:**
+
+- Handles multiple simultaneous tool calls in a single turn (not just one at a time)
+- Hard step limit (5 iterations) prevents infinite retry loops on tool failures
+- Real tool execution instead of trusting Claude's internal math — verified
+  by testing a multi-part question requiring both tools
+
+**Run it:**
+
+```bash
+python phase2/agent.py
+```

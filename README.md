@@ -20,3 +20,30 @@ Python · Anthropic Claude API · FastAPI · Streamlit
 ## In progress
 
 Phase 2 — RAG Pipelines + AI Agents
+
+## Phase 2 — RAG Pipelines + AI Agents (in progress)
+
+### RAG Chatbot over Technical Documentation
+
+A full retrieval-augmented generation pipeline that answers questions about
+a 35-page Spring Boot course document, with source transparency and
+grounded refusal (says "I don't know" instead of hallucinating).
+
+**Architecture:**
+
+PDF → chunking → Voyage embeddings → ChromaDB → FastAPI → Gradio chat UI
+
+**Stack:** Python · FastAPI · ChromaDB · Voyage AI embeddings · Anthropic Claude API · Gradio
+
+**Key engineering decisions:**
+
+- Fixed-size chunking (500 chars, 50 overlap) balances context completeness vs. specificity
+- Retrieval tuned from n_results=3 to 5 after testing — more context without noticeable noise
+- Explicit "answer only from context" prompting prevents hallucination — verified with an out-of-scope test question that correctly returns "I don't know"
+
+**Run it:**
+
+```bash
+uvicorn phase2.rag_api:app --reload    # terminal 1
+python phase2/gradio_app.py             # terminal 2
+```

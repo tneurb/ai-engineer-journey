@@ -68,3 +68,34 @@ computations an LLM is known to get wrong.
 ```bash
 python phase2/agent.py
 ```
+
+### Fine-Tuned Insurance Ticket Formatter (LoRA)
+
+A LoRA fine-tuned adapter for Mistral-7B-Instruct-v0.2 that converts informal,
+messy stakeholder requests into structured engineering tickets, specialized
+for insurance industry workflows (claims, underwriting, billing, compliance).
+
+**Model:** [huggingface.co/tneurb/mistral-insurance-ticket-formatter](https://huggingface.co/tneurb/mistral-insurance-ticket-formatter)
+
+**Stack:** Mistral 7B · PEFT (LoRA) · bitsandbytes (4-bit quantization) · Google Colab T4 GPU
+
+**Key engineering decisions:**
+
+- LoRA (r=16, alpha=32) trains only 13.6M of 7.26B parameters (0.19%) —
+  fits fine-tuning on a free GPU instead of requiring enterprise hardware
+- 4-bit NF4 quantization shrinks the base model from ~14GB to ~4GB memory footprint
+- Verified training actually worked with a real before/after comparison against
+  the untrained base model — not just a claim, a measured result
+
+**What the before/after comparison showed:**
+Fine-tuning changed _behavior_, not _knowledge_ — the base model produced
+rambling, inconsistent responses with conversational filler ("Thank you for
+your attention to this matter"). The fine-tuned model consistently produced
+a terse, professional Title + Description structure across every unseen test
+request, directly demonstrating the difference between fine-tuning (style/behavior)
+and RAG (knowledge) covered elsewhere in this repo.
+
+**Known limitation:** trained on only 15 examples / 6 optimizer steps as a
+learning exercise. The model reliably learned 2 of the intended 3 ticket
+sections (Title, Description) — Acceptance Criteria did not consistently
+appear, likely needing more training data or steps to fully lock in.

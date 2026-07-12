@@ -2,13 +2,13 @@ import os
 import voyageai
 from dotenv import load_dotenv
 import anthropic
-
+from langsmith import wrappers   # add this import
 
 
 load_dotenv()
 vo = voyageai.Client(api_key=os.getenv("VOYAGE_API_KEY"))
-client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-
+#client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+client = wrappers.wrap_anthropic(anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY")))  # wrap here
 tools = [
     {
         "name": "calculator",

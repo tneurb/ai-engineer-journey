@@ -99,3 +99,5 @@ and RAG (knowledge) covered elsewhere in this repo.
 learning exercise. The model reliably learned 2 of the intended 3 ticket
 sections (Title, Description) — Acceptance Criteria did not consistently
 appear, likely needing more training data or steps to fully lock in.
+**Observability:** Agent instrumented with LangSmith tracing (`wrap_anthropic()`)
+for full visibility into tool-use decisions, execution timing, and reasoning steps.

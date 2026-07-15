@@ -101,3 +101,16 @@ sections (Title, Description) — Acceptance Criteria did not consistently
 appear, likely needing more training data or steps to fully lock in.
 **Observability:** Agent instrumented with LangSmith tracing (`wrap_anthropic()`)
 for full visibility into tool-use decisions, execution timing, and reasoning steps.
+**Deployment:** Dockerized with a Dockerfile using a minimal, hand-scoped
+requirements.txt (not `pip freeze`, which pulled in unrelated conflicting
+dependencies from other experiments). ChromaDB is mounted as a volume at
+runtime rather than baked into the image — the correct pattern for
+separating code from data, and the fix for a real bug where Docker's
+COPY silently dropped a subdirectory on Windows/WSL2.
+
+**Run it:**
+
+```bash
+docker build -t rag-api .
+docker run -p 8000:8000 --env-file .env -v /path/to/chroma_db:/app/phase2/chroma_db rag-api
+```

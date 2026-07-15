@@ -1,27 +1,8 @@
-# AI Engineer Learning Journey
-
-Building my way to an AI Engineer role through hands-on challenges.
-Every file here is code I wrote myself, debugged, and shipped.
-
-## Phase 1 — Python for AI + LLM APIs ✅
-
-Five working projects built with the Anthropic Claude API:
-
-- **API Data Merger** — calls 3 public APIs, merges results with error handling
-- **Sentiment Classifier** — structured JSON output with confidence scoring
-- **Invoice Extractor** — multi-language extraction including Thai Buddhist calendar
-- **Multi-turn Chatbot** — conversation memory across unlimited turns
-- **Customer Support Bot** — FAQ grounding, unknown question handling, JSON logging
-
-## Stack
-
-Python · Anthropic Claude API · FastAPI · Streamlit
-
 ## In progress
 
-Phase 2 — RAG Pipelines + AI Agents
+Phase 4 — ML Depth + MLOps
 
-## Phase 2 — RAG Pipelines + AI Agents (in progress)
+## Phase 2 — RAG Pipelines + AI Agents ✅
 
 ### RAG Chatbot over Technical Documentation
 
@@ -69,6 +50,27 @@ computations an LLM is known to get wrong.
 python phase2/agent.py
 ```
 
+## Phase 3 — Production + Evals + Fine-tuning ✅
+
+### RAG Evaluation Suite (ragas)
+
+Built a 5-question eval suite scoring the Phase 2 RAG chatbot on faithfulness
+and answer relevancy, using an LLM-as-judge approach rather than "it looks right."
+
+**Results:** faithfulness 0.95 · answer relevancy 0.73
+
+**Stack:** ragas · OpenAI (judge model) · Hugging Face `datasets`
+
+**Key engineering decisions:**
+
+- Hit and resolved a confirmed upstream bug in ragas 0.4.3 (broken `ChatVertexAI`
+  import), verified against the project's own GitHub issues rather than guessed
+- Used explicit `LangchainLLMWrapper` around the judge model — the fix for a
+  second internal ragas bug (`InstructorLLM` incompatible with legacy metrics)
+- Lower relevancy score traced to a specific cause: the model correctly refused
+  to over-claim on one question rather than hallucinating a confident answer —
+  a case where being appropriately cautious costs relevancy score
+
 ### Fine-Tuned Insurance Ticket Formatter (LoRA)
 
 A LoRA fine-tuned adapter for Mistral-7B-Instruct-v0.2 that converts informal,
@@ -99,8 +101,12 @@ and RAG (knowledge) covered elsewhere in this repo.
 learning exercise. The model reliably learned 2 of the intended 3 ticket
 sections (Title, Description) — Acceptance Criteria did not consistently
 appear, likely needing more training data or steps to fully lock in.
+
+### Observability & Deployment
+
 **Observability:** Agent instrumented with LangSmith tracing (`wrap_anthropic()`)
 for full visibility into tool-use decisions, execution timing, and reasoning steps.
+
 **Deployment:** Dockerized with a Dockerfile using a minimal, hand-scoped
 requirements.txt (not `pip freeze`, which pulled in unrelated conflicting
 dependencies from other experiments). ChromaDB is mounted as a volume at
@@ -112,5 +118,5 @@ COPY silently dropped a subdirectory on Windows/WSL2.
 
 ```bash
 docker build -t rag-api .
-docker run -p 8000:8000 --env-file .env -v /path/to/chroma_db:/app/phase2/chroma_db rag-api
+docker run -p 8000:8000 --env-file .env -v /path/to/chroma_db:/app/phase2/chroma_db
 ```

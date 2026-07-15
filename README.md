@@ -1,8 +1,27 @@
+# AI Engineer Learning Journey
+
+Building my way to an AI Engineer role through hands-on challenges.
+Every file here is code I wrote myself, debugged, and shipped.
+
 ## In progress
 
 Phase 4 — ML Depth + MLOps
 
-## Phase 2 — RAG Pipelines + AI Agents ✅
+## Phase 1 — Python for AI + LLM APIs ✅
+
+Five working projects built with the Anthropic Claude API:
+
+- **API Data Merger** — calls 3 public APIs, merges results with error handling
+- **Sentiment Classifier** — structured JSON output with confidence scoring
+- **Invoice Extractor** — multi-language extraction including Thai Buddhist calendar
+- **Multi-turn Chatbot** — conversation memory across unlimited turns
+- **Customer Support Bot** — FAQ grounding, unknown question handling, JSON logging
+
+## Stack
+
+Python · Anthropic Claude API · FastAPI · Streamlit
+
+## Phase 2 — RAG Pipelines + AI Agents
 
 ### RAG Chatbot over Technical Documentation
 
@@ -73,8 +92,7 @@ and answer relevancy, using an LLM-as-judge approach rather than "it looks right
 
 ### Fine-Tuned Insurance Ticket Formatter (LoRA)
 
-A LoRA fine-tuned adapter for Mistral-7B-Instruct-v0.2 that converts informal,
-messy stakeholder requests into structured engineering tickets, specialized
+A LoRA fine-tuned adapter for Mistral-7B-Instruct-v0.2 that converts informal,messy stakeholder requests into structured engineering tickets, specialized
 for insurance industry workflows (claims, underwriting, billing, compliance).
 
 **Model:** [huggingface.co/tneurb/mistral-insurance-ticket-formatter](https://huggingface.co/tneurb/mistral-insurance-ticket-formatter)
@@ -106,7 +124,6 @@ appear, likely needing more training data or steps to fully lock in.
 
 **Observability:** Agent instrumented with LangSmith tracing (`wrap_anthropic()`)
 for full visibility into tool-use decisions, execution timing, and reasoning steps.
-
 **Deployment:** Dockerized with a Dockerfile using a minimal, hand-scoped
 requirements.txt (not `pip freeze`, which pulled in unrelated conflicting
 dependencies from other experiments). ChromaDB is mounted as a volume at
@@ -118,5 +135,5 @@ COPY silently dropped a subdirectory on Windows/WSL2.
 
 ```bash
 docker build -t rag-api .
-docker run -p 8000:8000 --env-file .env -v /path/to/chroma_db:/app/phase2/chroma_db
+docker run -p 8000:8000 --env-file .env -v /path/to/chroma_db:/app/phase2/chroma_db rag-api
 ```

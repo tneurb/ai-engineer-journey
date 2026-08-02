@@ -137,3 +137,29 @@ COPY silently dropped a subdirectory on Windows/WSL2.
 docker build -t rag-api .
 docker run -p 8000:8000 --env-file .env -v /path/to/chroma_db:/app/phase2/chroma_db rag-api
 ```
+
+## Phase 4 — ML Depth + MLOps (in progress)
+
+### Text Classifier from Scratch (PyTorch)
+
+A news headline classifier (4 categories: World, Sports, Business, Sci/Tech)
+built entirely from raw word indices - no pre-trained embeddings, no
+scikit-learn pipelines. Custom tokenizer, vocabulary, embedding layer, and
+training loop, all hand-written.
+
+**Dataset:** AG News (120,000 training headlines, 7,600 test)
+
+**Stack:** PyTorch, Hugging Face `datasets`
+
+**Result:** 89.93% validation accuracy (vs. 25% random-guess baseline)
+
+**Key engineering decisions:**
+
+- Found and fixed a real data-quality bug: broken HTML entities (`#39;`
+  instead of `&#39;`) were inflating a fake "39" token to the #10 most
+  common word in the vocabulary - fixed with explicit cleaning before
+  tokenizing, verified via before/after frequency comparison
+- Diagnosed early-stage overfitting directly from train/validation loss
+  curves: validation loss flattened by epoch 3 (0.284) while train loss
+  kept dropping through epoch 5 (0.224) - concluded early stopping around
+  epoch 3 would have given equivalent validation performance with less

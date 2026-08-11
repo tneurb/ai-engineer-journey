@@ -168,3 +168,16 @@ training loop, all hand-written.
 Tested embed_dim=64 vs 128 — found negligible difference in validation
 accuracy (89.70% vs 89.76%) despite embed_dim=128 achieving lower train
 loss, indicating embedding size isn't the current bottleneck for this task.
+
+### CI/CD Pipeline
+
+Automated testing via GitHub Actions - every push triggers pytest on a
+clean Ubuntu environment, catching issues invisible on a local machine
+with pre-installed dependencies.
+
+**Caught in practice:** a missing `mlflow` dependency that passed silently
+on the local dev machine (already installed from earlier work) but failed
+immediately in the clean CI environment - exactly the kind of gap CI
+exists to catch before it reaches production.
+
+**Tests:** HTML entity cleaning, tokenizer lowercasing, model output shape validation

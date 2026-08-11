@@ -6,3 +6,4 @@ __pycache__/
 progress.json
 conversation_log.json
 phase2/chroma_db/
+mlflow.db

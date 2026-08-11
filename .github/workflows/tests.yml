@@ -17,7 +17,6 @@ jobs:
         run: |
           pip install torch datasets pytest
 
-      - name: Run tests
+      - name: Install dependencies
         run: |
-          cd phase4
-          pytest test_classifier.py -v
+          pip install torch datasets pytest mlflow

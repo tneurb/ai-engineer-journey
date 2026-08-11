@@ -6,6 +6,9 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import TensorDataset, DataLoader
+import mlflow
+
+mlflow.set_experiment("ag-news-classifier")
 
 dataset = load_dataset("fancyzhx/ag_news")
 print(dataset)
@@ -25,13 +28,6 @@ def clean_text(text):
     text = html.unescape(text)          # catch any properly-formed HTML entities too
     return text
 
-# sample_text = dataset["train"][0]["text"]
-# print("Original text:")
-# print(sample_text)
-# print()
-# print("After tokenize():")
-# print(tokenize(sample_text))
-
 # Build vocabulary from the training set
 counter = Counter()
 for example in dataset["train"]:
@@ -39,28 +35,6 @@ for example in dataset["train"]:
 
 print(f"Total unique words found: {len(counter)}")
 print("Top 10 most common words:", counter.most_common(10))
-
-# Check if '39' appears in a way that suggests it's leftover from an apostrophe entity
-# for example in dataset["train"][:20]["text"]:
-#     if "39" in example:
-#         print(example)
-#         print("---")
-
-# count_checked = 0
-# count_found = 0
-# for example in dataset["train"]:
-#     count_checked += 1
-#     if "39" in example["text"]:
-#         count_found += 1
-#         if count_found <= 5:
-#             print(repr(example["text"]))
-#             print("---")
-#     if count_checked >= 2000:
-#         break
-
-# print(f"Found '39' in {count_found} out of {count_checked} checked")    
-
-
 
 # Keep only reasonably common words - very rare words add noise without much benefit
 vocab_size = 10000
@@ -123,7 +97,8 @@ class TextClassifier(nn.Module):
         output = self.fc(pooled)               # (batch, num_classes)
         return output
 
-model = TextClassifier(vocab_size=len(word_to_idx))
+# model = TextClassifier(vocab_size=len(word_to_idx))
+model = TextClassifier(vocab_size=len(word_to_idx), embed_dim=128)
 print(model)
 
 # Quick sanity test: run one batch through the untrained network
@@ -149,37 +124,51 @@ loss_fn = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 epochs = 5
-for epoch in range(epochs):
-    model.train()
-    total_train_loss = 0
-    for X_batch, y_batch in train_loader:
-        optimizer.zero_grad()
-        pred = model(X_batch)
-        loss = loss_fn(pred, y_batch)
-        loss.backward()
-        optimizer.step()
-        total_train_loss += loss.item()
+with mlflow.start_run():
+    mlflow.log_param("embed_dim", 128)
+    mlflow.log_param("learning_rate", 0.001)
+    mlflow.log_param("epochs", epochs)
+    mlflow.log_param("batch_size", 64)
 
+    for epoch in range(epochs):
+        model.train()
+        total_train_loss = 0
+        for X_batch, y_batch in train_loader:
+            optimizer.zero_grad()
+            pred = model(X_batch)
+            loss = loss_fn(pred, y_batch)
+            loss.backward()
+            optimizer.step()
+            total_train_loss += loss.item()
+
+        model.eval()
+        total_val_loss = 0
+        with torch.no_grad():
+            for X_batch, y_batch in val_loader:
+                pred = model(X_batch)
+                loss = loss_fn(pred, y_batch)
+                total_val_loss += loss.item()
+
+        # calculate averages HERE, inside the loop, right after gathering totals
+        avg_train_loss = total_train_loss / len(train_loader)
+        avg_val_loss = total_val_loss / len(val_loader)
+
+        mlflow.log_metric("train_loss", avg_train_loss, step=epoch)
+        mlflow.log_metric("val_loss", avg_val_loss, step=epoch)
+        print(f"Epoch {epoch+1}: train_loss={avg_train_loss:.4f}, val_loss={avg_val_loss:.4f}")
+
+    # accuracy check happens AFTER training finishes, still inside the mlflow run
     model.eval()
-    total_val_loss = 0
+    correct = 0
+    total = 0
     with torch.no_grad():
         for X_batch, y_batch in val_loader:
             pred = model(X_batch)
-            loss = loss_fn(pred, y_batch)
-            total_val_loss += loss.item()
+            predicted_labels = pred.argmax(dim=1)
+            correct += (predicted_labels == y_batch).sum().item()
+            total += y_batch.size(0)
 
-    avg_train_loss = total_train_loss / len(train_loader)
-    avg_val_loss = total_val_loss / len(val_loader)
-    print(f"Epoch {epoch+1}: train_loss={avg_train_loss:.4f}, val_loss={avg_val_loss:.4f}")
+    val_accuracy = correct / total
+    mlflow.log_metric("val_accuracy", val_accuracy)
+    print(f"Validation accuracy: {val_accuracy * 100:.2f}%")
     
-model.eval()
-correct = 0
-total = 0
-with torch.no_grad():
-    for X_batch, y_batch in val_loader:
-        pred = model(X_batch)
-        predicted_labels = pred.argmax(dim=1)
-        correct += (predicted_labels == y_batch).sum().item()
-        total += y_batch.size(0)
-
-print(f"Validation accuracy: {correct / total * 100:.2f}%")

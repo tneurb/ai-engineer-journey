@@ -163,11 +163,14 @@ training loop, all hand-written.
   curves: validation loss flattened by epoch 3 (0.284) while train loss
   kept dropping through epoch 5 (0.224) - concluded early stopping around
   epoch 3 would have given equivalent validation performance with less
+  training time and less memorization risk
 
-**Experiment tracking:** Used MLflow to log and compare training runs.
-Tested embed_dim=64 vs 128 — found negligible difference in validation
-accuracy (89.70% vs 89.76%) despite embed_dim=128 achieving lower train
-loss, indicating embedding size isn't the current bottleneck for this task.
+### Experiment Tracking (MLflow)
+
+Used MLflow to log and compare training runs. Tested embed_dim=64 vs 128 -
+found negligible difference in validation accuracy (89.70% vs 89.76%)
+despite embed_dim=128 achieving lower train loss, indicating embedding
+size isn't the current bottleneck for this task.
 
 ### CI/CD Pipeline
 
